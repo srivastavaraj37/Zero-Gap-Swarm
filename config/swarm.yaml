@@ -3,10 +3,10 @@ fleet_size: 26                # default N - chosen by analysis/fleet_sizing.py
 dt: 0.5                       # simulation tick (s)
 mode: zerogap                 # zerogap | baseline
 
-altitudes:                    # layering: every layer >= 22 m from the next
-  surveyor: 30.0
-  relay: 52.0
-  outbound: 75.0
+altitudes:                    # layering: every layer 23 m from the next
+  surveyor: 28.0
+  relay: 51.0
+  outbound: 74.0
   inbound: 97.0
 
 survey:
@@ -26,12 +26,13 @@ backbone:                     # fixed relay stations along the spine y = 500
   lead_m: 20.0                # station j active while x_j <= column_x + lead
 
 pads:                         # landing/charging pads around the center
-  x: [-130.0, -108.0, -86.0, -64.0, -42.0, -20.0]
-  y: [434.0, 456.0, 478.0, 500.0, 522.0, 544.0, 566.0]
-gates:
-  outbound: [5.0, 470.0]      # corridor exit used by departing UAVs (alt outbound)
-  inbound: [5.0, 530.0]       # corridor entry used by returning UAVs (alt inbound)
-launch_interval_s: 5.0
+  x: [-145.0, -119.0, -93.0, -67.0, -41.0, -15.0]
+  y: [422.0, 448.0, 474.0, 500.0, 526.0, 552.0, 578.0]
+gates:                        # corridor mouth; straight lines used when they stay legal
+  x: 5.0
+  y_range: [440.0, 560.0]
+launch_interval_s: 8.0
+transit_lane_y: 455.0         # outbound lane parallel to the spine
 
 rendezvous_offset_m: 28.0     # relief UAV waits this far from the slot (make-before-break)
 
@@ -50,5 +51,5 @@ ap_shield:
   clearance_m: 25.0
 
 safety:
-  guard_radius: 32.0          # repulsion starts inside this 3-D distance
-  lookahead_s: 2.0
+  guard_radius: 30.0          # repulsion when closing inside this 3-D distance
+  lookahead_s: 3.0

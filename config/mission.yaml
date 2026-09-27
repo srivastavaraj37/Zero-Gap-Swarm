@@ -25,6 +25,7 @@ uav:
   max_accel: 4.0                    # ASSUMPTION (m/s^2)
   swap_time_s: 120.0                # ASSUMPTION: battery swap / recharge time
   return_margin_s: 60.0             # reserve kept on every return trip
+  home_time_factor: 1.2             # traffic allowance on the estimated trip home
 
 comm:
   max_range: 100.0                  # hard link limit (UAV-UAV and UAV-center)
