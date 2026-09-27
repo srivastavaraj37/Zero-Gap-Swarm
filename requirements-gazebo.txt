@@ -1,0 +1,4 @@
+# Optional: only for the PX4 SITL / Gazebo demo (gazebo_demo/).
+# Keep numpy < 1.25 here too, otherwise pip may upgrade it and break scipy.
+pymavlink>=2.4
+numpy>=1.22.4,<1.25

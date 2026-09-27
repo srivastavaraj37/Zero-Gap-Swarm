@@ -75,26 +75,27 @@ def sizing(cfg):
 
 def report(o):
     L = []
-    L.append("# Fleet sizing (analytical)\n")
-    L.append(f"* Farthest point from the center: {o['d_far_m']:.1f} m (far corners).")
-    L.append(f"* Pure relay chain at <= 90 m/hop: {o['chain_hops']} hops -> **{o['chain_relays']} relays** "
-             f"(hop {o['d_far_m'] / o['chain_hops']:.1f} m >= 20 m separation: {o['min_sep_ok']}).")
-    L.append(f"* Surveyor column: lanes {o['lane_spacing_m']:.1f} m apart (< 2 x 40 m footprint), "
-             f"{o['surveyors']} lanes per band -> {o['surveyors_cfg']} surveyors.")
-    L.append(f"* Comb backbone: fixed spine stations, only those behind the column are occupied. "
-             f"Peak simultaneous slots {o['peak_slots']}, mean {o['mean_slots']:.1f}.")
-    L.append("* Rotation: each slot needs active_frac x cycle / on_station UAVs, where "
+    L.append("# Fleet sizing (by hand)\n")
+    L.append(f"* The farthest points from the center are the far corners, {o['d_far_m']:.1f} m away.")
+    L.append(f"* A plain relay chain with hops of at most 90 m needs {o['chain_hops']} hops, so "
+             f"{o['chain_relays']} relays (each hop is {o['d_far_m'] / o['chain_hops']:.1f} m, "
+             f"more than the 20 m separation: {o['min_sep_ok']}).")
+    L.append(f"* Surveyor lanes are {o['lane_spacing_m']:.1f} m apart (less than 2 x 40 m footprint), "
+             f"so {o['surveyors']} lanes cover one band: {o['surveyors_cfg']} surveyors.")
+    L.append(f"* The spine has fixed relay stations and only the ones behind the column are used. "
+             f"At most {o['peak_slots']} slots are needed at once, {o['mean_slots']:.1f} on average.")
+    L.append("* Each slot needs active_frac x cycle / on_station UAVs, where "
              "on_station = 1200 - t_out - t_home - 60 margin - 60 handover overlap and cycle = battery used + swap.\n")
     L.append("| slot | active frac | t_out s | t_home s | on-station s/sortie | UAVs |")
     L.append("|---|---|---|---|---|---|")
     for r in o["rows"]:
         L.append(f"| {r['slot']} | {r['active_frac']:.2f} | {r['t_out']:.0f} | {r['t_home']:.0f} | "
                  f"{r['on_station']:.0f} | {r['uavs']:.2f} |")
-    L.append(f"\n* Rotation fleet (sum): **{o['rotation_uavs']:.1f}**")
-    L.append(f"* + AP-Shield shadows: {o['shadows']}, + fault reserve: {o['fault_reserve']}")
-    L.append(f"* **Recommended N = {o['N_recommended']}**")
-    L.append("\nThe steady-state model ignores the 45-min horizon (everyone starts charged, the last "
-             "sorties are short), so the simulated sweep over N in results/ is the final word.")
+    L.append(f"\n* UAVs needed for rotation (sum): {o['rotation_uavs']:.1f}")
+    L.append(f"* Plus AP-Shield shadows: {o['shadows']}, plus spares for faults: {o['fault_reserve']}")
+    L.append(f"* Recommended N = {o['N_recommended']}")
+    L.append("\nThis estimate assumes a steady state. In the real 45-min mission all UAVs start charged "
+             "and the last flights are short, so the simulated sweep over N in results/ decides the final N.")
     return "\n".join(L)
 
 

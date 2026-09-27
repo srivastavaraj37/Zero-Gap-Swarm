@@ -167,7 +167,7 @@ def summary(df, sw, sizing_md):
     L = ["# ZERO-GAP results\n",
          f"All numbers below come from `analysis/run_batch.py`: {n} seeds x {{baseline, zerogap}} x "
          f"{{no faults, faults}}, N = {int(df['fleet_size'].iloc[0])} UAVs, 45-min missions. "
-         "Values are mean +/- sd over seeds. Raw per-run rows: `results/batch_runs.csv`.\n",
+         "Each value is the mean +/- sd over seeds. One row per run is in `results/batch_runs.csv`.\n",
          "| metric | baseline | ZERO-GAP | baseline + faults | ZERO-GAP + faults |",
          "|---|---|---|---|---|"]
     for name, key in rows:
@@ -177,7 +177,7 @@ def summary(df, sw, sizing_md):
             for m, f in conds]
     L.append("| all UAVs landed by 45:00 (% of runs) | " + " | ".join(land) + " |")
     L.append("\nThe proxy score applies the official weights (mission 25, comm 25, relay/role 20, "
-             "fault recovery 15, safety 10) to our own metrics; it is **not** the official scorer.\n")
+             "fault recovery 15, safety 10) to our own metrics. It is not the official scorer.\n")
     L.append("![comparison](plots/comparison.png)\n\n![report delay](plots/report_delay.png)\n")
     if sw is not None:
         L.append("## Fleet size sweep\n")
@@ -191,7 +191,7 @@ def summary(df, sw, sizing_md):
                      f"{z['proxy_score'].mean():.1f} | {z['separation_violations'].mean():.1f} |")
         L.append("\n![fleet sweep](plots/fleet_sweep.png)\n")
     if sizing_md:
-        L.append(sizing_md.replace("# Fleet sizing (analytical)", "## Fleet sizing (analytical)"))
+        L.append(sizing_md.replace("# Fleet sizing (by hand)", "## Fleet sizing (by hand)"))
     L.append("\n## Single run timeline (seed 1, ZERO-GAP, no faults)\n\n![timeline](plots/timeline.png)\n")
     with open(os.path.join(RES, "summary.md"), "w") as f:
         f.write("\n".join(L) + "\n")

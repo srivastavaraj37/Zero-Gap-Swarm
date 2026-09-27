@@ -92,10 +92,8 @@ def ap_losses(P, airborne_nodes, surveyor_nodes):
 
 
 def resilience(losses, n_connected_surv, n_airborne):
-    """(strict SFT flag, graded retention). SFT: no single UAV loss disconnects any
-    connected surveyor. Retention: expected fraction of connected surveyors that
-    stay connected after a uniformly random single-UAV loss (a lost surveyor
-    itself is not counted against connectivity)."""
+    """Returns (sft, retention). sft is True if no single UAV loss would cut off a surveyor.
+    retention is the expected share of surveyors still connected after one random UAV is lost."""
     if n_connected_surv == 0 or n_airborne == 0:
         return False, 0.0
     sft = len(losses) == 0

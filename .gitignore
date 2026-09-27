@@ -1,8 +1,20 @@
+# python
 __pycache__/
 *.pyc
+.pytest_cache/
+*.egg-info/
+
+# ROS 2 build output
 ros2_ws/build/
 ros2_ws/install/
 ros2_ws/log/
+
+# local runs and scratch files
 results/runs/
-.pytest_cache/
-zero_gap_6hr_prompt.md
+*.log
+*.tmp
+*.swp
+*~
+.DS_Store
+.vscode/
+.idea/

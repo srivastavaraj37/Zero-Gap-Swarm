@@ -1,6 +1,6 @@
 # ZERO-GAP results
 
-All numbers below come from `analysis/run_batch.py`: 20 seeds x {baseline, zerogap} x {no faults, faults}, N = 38 UAVs, 45-min missions. Values are mean +/- sd over seeds. Raw per-run rows: `results/batch_runs.csv`.
+All numbers below come from `analysis/run_batch.py`: 20 seeds x {baseline, zerogap} x {no faults, faults}, N = 38 UAVs, 45-min missions. Each value is the mean +/- sd over seeds. One row per run is in `results/batch_runs.csv`.
 
 | metric | baseline | ZERO-GAP | baseline + faults | ZERO-GAP + faults |
 |---|---|---|---|---|
@@ -36,7 +36,7 @@ All numbers below come from `analysis/run_batch.py`: 20 seeds x {baseline, zerog
 | proxy score (/95) | 57.3 +/- 2.8 | 86.2 +/- 2.4 | 46.1 +/- 5.9 | 75.0 +/- 6.1 |
 | all UAVs landed by 45:00 (% of runs) | 100% | 100% | 100% | 100% |
 
-The proxy score applies the official weights (mission 25, comm 25, relay/role 20, fault recovery 15, safety 10) to our own metrics; it is **not** the official scorer.
+The proxy score applies the official weights (mission 25, comm 25, relay/role 20, fault recovery 15, safety 10) to our own metrics. It is not the official scorer.
 
 ![comparison](plots/comparison.png)
 
@@ -57,13 +57,13 @@ The proxy score applies the official weights (mission 25, comm 25, relay/role 20
 
 ![fleet sweep](plots/fleet_sweep.png)
 
-## Fleet sizing (analytical)
+## Fleet sizing (by hand)
 
-* Farthest point from the center: 1185.6 m (far corners).
-* Pure relay chain at <= 90 m/hop: 14 hops -> **13 relays** (hop 84.7 m >= 20 m separation: True).
-* Surveyor column: lanes 71.4 m apart (< 2 x 40 m footprint), 7 lanes per band -> 7 surveyors.
-* Comb backbone: fixed spine stations, only those behind the column are occupied. Peak simultaneous slots 20, mean 13.6.
-* Rotation: each slot needs active_frac x cycle / on_station UAVs, where on_station = 1200 - t_out - t_home - 60 margin - 60 handover overlap and cycle = battery used + swap.
+* The farthest points from the center are the far corners, 1185.6 m away.
+* A plain relay chain with hops of at most 90 m needs 14 hops, so 13 relays (each hop is 84.7 m, more than the 20 m separation: True).
+* Surveyor lanes are 71.4 m apart (less than 2 x 40 m footprint), so 7 lanes cover one band: 7 surveyors.
+* The spine has fixed relay stations and only the ones behind the column are used. At most 20 slots are needed at once, 13.6 on average.
+* Each slot needs active_frac x cycle / on_station UAVs, where on_station = 1200 - t_out - t_home - 60 margin - 60 handover overlap and cycle = battery used + swap.
 
 | slot | active frac | t_out s | t_home s | on-station s/sortie | UAVs |
 |---|---|---|---|---|---|
@@ -88,11 +88,11 @@ The proxy score applies the official weights (mission 25, comm 25, relay/role 20
 | S5 | 1.00 | 150 | 199 | 731 | 1.73 |
 | S6 | 1.00 | 155 | 205 | 720 | 1.76 |
 
-* Rotation fleet (sum): **22.6**
-* + AP-Shield shadows: 3, + fault reserve: 2
-* **Recommended N = 28**
+* UAVs needed for rotation (sum): 22.6
+* Plus AP-Shield shadows: 3, plus spares for faults: 2
+* Recommended N = 28
 
-The steady-state model ignores the 45-min horizon (everyone starts charged, the last sorties are short), so the simulated sweep over N in results/ is the final word.
+This estimate assumes a steady state. In the real 45-min mission all UAVs start charged and the last flights are short, so the simulated sweep over N in results/ decides the final N.
 
 
 ## Single run timeline (seed 1, ZERO-GAP, no faults)
