@@ -45,6 +45,26 @@ More frames: `docs/figures/snapshot_t1420.png` (relief in progress), `docs/figur
 Full table, fleet sweep and plots: [`results/summary.md`](results/summary.md).
 Assumptions and known limitations: [`docs/assumptions.md`](docs/assumptions.md).
 
+## Gazebo demo (PX4 SITL)
+
+Branch `gazebo-demo`. Replays two baton passes from the seed-1 run (relay stations 2 and 3,
+sim t = 795-880 s) on 4 stock PX4 iris vehicles in Gazebo classic, scaled 1:4 in space and
+4x in time, over MAVLink (pymavlink, `SET_POSITION_TARGET_LOCAL_NED` at 10 Hz, OFFBOARD).
+
+```bash
+scripts/run_gazebo_demo.sh            # launches 4 PX4 SITL iris (UDP 14541-14544), replays, records
+# -> results/gazebo_demo.mp4 (55 s, Gazebo window only)
+```
+
+* `gazebo_demo/launch_sitl.sh`: same as PX4's `sitl_multiple_run.sh -m iris -n 4`, with our world
+  (`zg_spine.world`: station poles + fixed camera).
+* `gazebo_demo/extract_traj.py`: re-runs seed 1 and dumps the 4 UAV tracks (`traj_seed1.csv`).
+  It runs with `PYTHONNOUSERSITE=1` because `zg` needs numpy < 2.
+* `gazebo_demo/px4_replay.py`: arm, OFFBOARD, climb to separate layers, move to start, replay, land.
+* Needs `~/PX4-Autopilot` v1.14 built for gazebo-classic, and pymavlink.
+* Known limits: position-only setpoints lag moving vehicles by up to about 6 m. The relief for
+  station 3 waits 8.5 m east of the pole, outside the camera view.
+
 ## Install
 
 Tested on Ubuntu 22.04 + ROS 2 Humble, Python 3.10.
