@@ -82,7 +82,7 @@ scripts/run_gazebo_demo.sh            # launches 4 PX4 SITL iris (UDP 14541-1454
 Tested on Ubuntu 22.04 + ROS 2 Humble, Python 3.10.
 
 ```bash
-git clone <repo> zero_gap_swarm && cd zero_gap_swarm
+git clone https://github.com/srivastavaraj37/Zero-Gap-Swarm.git zero_gap_swarm && cd zero_gap_swarm
 scripts/install.sh          # pip --user deps (numpy<1.25 for ROS/scipy ABI), builds ros2_ws
 python3 -m pytest -q tests  # 15 tests: Tarjan, routing, baton timing, battery, separation
 ```
