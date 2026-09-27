@@ -1,0 +1,54 @@
+# ZERO-GAP swarm / planner parameters.
+fleet_size: 26                # default N - chosen by analysis/fleet_sizing.py
+dt: 0.5                       # simulation tick (s)
+mode: zerogap                 # zerogap | baseline
+
+altitudes:                    # layering: every layer >= 22 m from the next
+  surveyor: 30.0
+  relay: 52.0
+  outbound: 75.0
+  inbound: 97.0
+
+survey:
+  surveyors: 7                # surveyor column size (lanes per band)
+  bands: 2                    # column sweeps the area in horizontal bands
+  lane_spacing: 71.43         # < 2 x sensing radius -> overlapping lanes
+  sweep_speed: 3.5            # m/s - slower than max speed so relief UAVs can intercept
+  x_min: 35.0
+  x_max: 965.0
+  start_hold_s: 150.0         # column holds at x_min while the swarm launches
+
+backbone:                     # fixed relay stations along the spine y = 500
+  y: 500.0
+  x_first: 0.0
+  x_last: 925.0
+  count: 13
+  lead_m: 20.0                # station j active while x_j <= column_x + lead
+
+pads:                         # landing/charging pads around the center
+  x: [-130.0, -108.0, -86.0, -64.0, -42.0, -20.0]
+  y: [434.0, 456.0, 478.0, 500.0, 522.0, 544.0, 566.0]
+gates:
+  outbound: [5.0, 470.0]      # corridor exit used by departing UAVs (alt outbound)
+  inbound: [5.0, 530.0]       # corridor entry used by returning UAVs (alt inbound)
+launch_interval_s: 5.0
+
+rendezvous_offset_m: 28.0     # relief UAV waits this far from the slot (make-before-break)
+
+baton:
+  enabled: true
+  handover_buffer_s: 60.0     # relief arrives at least this long before must-return
+  lookahead_s: 30.0           # pre-position relays this long before they are needed
+  failure_detect_s: 2.0       # heartbeat timeout before a slot is declared vacant
+  promote_shadows: true       # airborne shadow may be promoted to fill a failed slot
+
+ap_shield:
+  enabled: true
+  max_shadows: 3
+  ground_reserve: 2           # never launch a shadow if fewer ready UAVs than this remain
+  period_s: 2.0
+  clearance_m: 25.0
+
+safety:
+  guard_radius: 32.0          # repulsion starts inside this 3-D distance
+  lookahead_s: 2.0

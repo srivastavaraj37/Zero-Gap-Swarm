@@ -1,0 +1,18 @@
+# Fault injection (used when faults are enabled). All times in seconds, seeded.
+enabled: false
+kills:
+  count: 2                    # random on-station UAVs destroyed
+  t_min: 500.0
+  t_max: 2000.0
+jamming:
+  count: 1                    # circular region where all links are cut
+  radius: 120.0
+  duration: 60.0
+  t_min: 500.0
+  t_max: 2000.0
+extra_loss:
+  count: 1                    # global link degradation window
+  factor: 0.85                # multiply every link success probability
+  duration: 180.0
+  t_min: 300.0
+  t_max: 2200.0

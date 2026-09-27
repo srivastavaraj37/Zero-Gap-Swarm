@@ -1,0 +1,47 @@
+# Official PUSHPAK GC1 "UAV-X" Stage-1 mission constraints (hard limits).
+# Anything marked ASSUMPTION is not given by the organisers - see docs/assumptions.md.
+
+area:                     # operational area, metres
+  xmin: 0.0
+  xmax: 1000.0
+  ymin: 0.0
+  ymax: 1000.0
+
+center:                   # operational center (GCS + takeoff/landing + charging)
+  xy: [-75.0, 500.0]      # 75 m outside the LEFT edge, vertically centred
+  antenna_height: 10.0    # ASSUMPTION: GCS antenna mast height (m)
+
+geofence:                 # allowed airspace = area  U  corridor to the center
+  corridor: {xmin: -150.0, xmax: 0.0, ymin: 420.0, ymax: 580.0}
+  max_altitude: 100.0
+
+mission_duration_s: 2700.0          # 45 min - ALL UAVs landed by then
+end_margin_s: 45.0                  # planned landing margin before 45:00
+
+uav:
+  max_flight_time_s: 1200.0         # 20 min battery
+  max_speed: 5.0                    # m/s (3-D norm)
+  max_vertical_speed: 3.0           # ASSUMPTION (m/s), within the 5 m/s limit
+  max_accel: 4.0                    # ASSUMPTION (m/s^2)
+  swap_time_s: 120.0                # ASSUMPTION: battery swap / recharge time
+  return_margin_s: 60.0             # reserve kept on every return trip
+
+comm:
+  max_range: 100.0                  # hard link limit (UAV-UAV and UAV-center)
+  planning_range: 90.0              # planner never relies on links longer than this
+  p_full_range: 70.0                # p = 1.0 up to here ...
+  p_at_max_range: 0.7               # ... then linear down to 0.7 at 100 m
+  hop_latency_s: 0.020
+  hop_jitter_s: 0.010
+  max_retries: 3                    # link-layer ARQ retries per hop
+  report_deadline_s: 10.0           # POI detection -> report at center
+  telemetry_period_s: 1.0
+
+safety:
+  min_separation: 20.0              # 3-D, any airborne pair
+
+poi:
+  count: 10
+  sensing_radius: 40.0              # ASSUMPTION: downward camera footprint radius
+  spawn_t_min: 30.0                 # ASSUMPTION: spawn window (s) - see assumptions.md
+  spawn_t_max: 1800.0
