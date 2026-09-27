@@ -1,17 +1,4 @@
-"""Relay backbone + surveyor formation (slots) and the deterministic sweep schedule.
-
-Topology (the "comb"):
-  GCS -- R0 -- R1 -- ... -- Rj            fixed relay stations on the spine y = 500 (alt relay)
-                             \\
-                              S0 - S1 - ... - S(k-1)    surveyor column (alt surveyor), lanes
-                                                      spaced < 2 x sensing radius, relays for itself
-
-The column sweeps the area band by band (lawnmower with lane spacing < 2r).
-Because the schedule is a deterministic function of time, every UAV - and the
-Baton protocol - can predict where any slot will be at any future time, which
-lets relief UAVs intercept moving slots and lets disconnected UAVs keep
-executing the plan autonomously.
-"""
+"""Comb topology: fixed relay stations on the spine, the surveyor column and its sweep schedule."""
 import numpy as np
 
 

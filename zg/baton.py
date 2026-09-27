@@ -1,12 +1,4 @@
-"""NOVELTY A - Relay Baton Protocol (make-before-break role handover).
-
-time_to_must_return(u) = battery_remaining - time_to_fly_home(u) - margin.
-A relief UAV is dispatched early enough to be on station (at a rendezvous
-point beside the slot) BEFORE that reaches zero; the old occupant leaves only
-when the live comm graph confirms that removing it keeps every active role
-node connected to the GCS. The center-side swap queue serialises launches and
-never relieves two slots on the same backbone path in the same window.
-"""
+"""Relay Baton: must-return timing, slot intercept and the make-before-break handover check."""
 import numpy as np
 
 from .ap_shield import reachable

@@ -1,10 +1,4 @@
-"""NOVELTY B - Articulation-Point Shield.
-
-Every period: run Tarjan's algorithm on the live comm graph (GCS + airborne
-UAVs), rank articulation points (APs) by how many active surveyors would lose
-their route to the GCS if that single UAV failed, and fly spare UAVs to
-SHADOW positions that create an alternate path around the worst APs.
-"""
+"""AP Shield: Tarjan articulation points, per-AP surveyor loss and shadow placement."""
 import numpy as np
 
 from .comm import GCS

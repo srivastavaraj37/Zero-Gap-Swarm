@@ -32,10 +32,13 @@ The baseline uses the same simulator, topology, sweep schedule and safety layer,
 
 ## Known limitations (honest list)
 
-* **Handover gaps are not always zero.** About 20-30 % of role handovers in ZERO-GAP still have a
+* **Handover gaps are not always zero.** About 21-25 % of role handovers in ZERO-GAP still have a
   gap. They cluster when several surveyor batteries expire together and no relief can be on
   station in time (fleet supply), or when the relief has to chase the column at 1.5 m/s closing
   speed. See `handover_gap_*` in `results/summary.md`.
+* **Not every POI is found.** ZERO-GAP finds 9.05 / 10 on average (no faults) and reports every
+  found POI on time; the misses are POIs that spawn behind the column late in the mission and are
+  not revisited before the final recall (one full area pass takes about 13.6 min).
 * **Connectivity is not 100 %.** Remaining downtime comes from the same supply crunches plus the
   first minutes of deployment.
 * **Strict single-failure tolerance is low.** In a comb (tree) topology almost every node is an

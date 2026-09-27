@@ -98,12 +98,13 @@ def sweep(sw):
         for mode in ("baseline", "zerogap"):
             g = sw[sw["mode"] == mode].groupby("fleet_size")[key]
             m, s = g.mean(), g.std().fillna(0)
-            ax.fill_between(m.index, m - s, m + s, color=COL[mode], alpha=0.15, lw=0)
-            ax.plot(m.index, m.values, color=COL[mode], lw=2, marker="o", ms=5, label=LABEL[mode])
-            ax.text(m.index[-1] + 0.3, m.values[-1], LABEL[mode], color=INK2, fontsize=9, va="center")
+            x, y, e = m.index.to_numpy(), m.to_numpy(), s.to_numpy()
+            ax.fill_between(x, y - e, y + e, color=COL[mode], alpha=0.15, lw=0)
+            ax.plot(x, y, color=COL[mode], lw=2, marker="o", ms=5, label=LABEL[mode])
+            ax.text(x[-1] + 0.3, y[-1], LABEL[mode], color=INK2, fontsize=9, va="center")
         ax.set_title(title, loc="left", color=INK)
         ax.set_xlabel("fleet size N")
-        ax.set_xlim(m.index[0] - 1, m.index[-1] + 4)
+        ax.set_xlim(x[0] - 1, x[-1] + 5)
     axes[0].legend(frameon=False, loc="lower right")
     fig.tight_layout()
     fig.savefig(os.path.join(PLOTS, "fleet_sweep.png"), dpi=140)
@@ -112,7 +113,8 @@ def sweep(sw):
 
 def timeline(tl, handovers, title):
     fig, axes = plt.subplots(3, 1, figsize=(10, 6.5), sharex=True)
-    t = tl["t"] / 60
+    t = (tl["t"] / 60).to_numpy()
+    tl = {k: tl[k].to_numpy() for k in tl.columns}
     axes[0].plot(t, tl["surv_connected"], color=COL["zerogap"], lw=1.5)
     axes[0].set_ylabel("surveyors\nconnected")
     axes[0].set_ylim(-0.3, 7.5)

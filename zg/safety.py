@@ -1,9 +1,4 @@
-"""Safety layer: velocity-level separation (repulsion + priority yielding), speed /
-altitude / geofence clamps, and violation accounting.
-
-Primary separation comes from altitude layering (surveyor 30 / relay 52 /
-outbound 75 / inbound 97 m: >= 22 m apart) - this layer handles the residual
-cases (climbs/descents, handovers, converging transit traffic)."""
+"""Separation (layers, repulsion, hard filter), geofence/altitude clamps and violation counting."""
 import numpy as np
 
 

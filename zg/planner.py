@@ -1,9 +1,4 @@
-"""Center-side mission planner: slot filling, Relay Baton, recall, AP Shield.
-
-Runs at the GCS each tick with the latest telemetry (Stage-1 assumption: the
-planner sees every UAV state; UAVs that lose the link keep flying the shared
-deterministic schedule autonomously, so a disconnection never freezes the plan).
-"""
+"""GCS planner: fills slots, runs Baton reliefs, 45-min recall and the AP Shield."""
 import numpy as np
 
 from .ap_shield import place_shadow
