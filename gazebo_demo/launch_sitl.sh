@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Same as PX4's sitl_multiple_run.sh (iris, spawn at (0, 3N), MAVLink offboard on UDP 14540+N),
-# but loads gazebo_demo/zg_spine.world for station markers and a fixed camera.
+# but loads gazebo_demo/zg_spine.world (sky, grass, station markers, fixed camera).
 set -e
 N=${1:-4}
 PX4_DIR=${PX4_DIR:-$HOME/PX4-Autopilot}
@@ -25,5 +25,5 @@ for n in $(seq 1 $N); do
     --output-file /tmp/iris_$n.sdf
   gz model --spawn-file=/tmp/iris_$n.sdf --model-name=iris_$n -x 0.0 -y $((3 * n)) -z 0.83 > /dev/null
 done
-gzclient > /tmp/zg_gzclient.log 2>&1 < /dev/null &
+HOME="$HERE/gzhome" gzclient > /tmp/zg_gzclient.log 2>&1 < /dev/null &   # own gui.ini: 1920x1080
 echo "started $N iris vehicles"

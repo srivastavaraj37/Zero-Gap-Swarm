@@ -55,24 +55,27 @@ Our assumptions and known limitations are in [`docs/assumptions.md`](docs/assump
 ## Gazebo demo (PX4 SITL)
 
 The code is in `gazebo_demo/`. It replays two baton passes from the seed 1 run (relay stations
-2 and 3, sim t = 795-880 s) on 4 stock PX4 iris vehicles in Gazebo classic. Space is scaled 1:4
-and time runs 4x faster. We control the vehicles over MAVLink with pymavlink, sending
+2 and 3, sim t = 795-880 s) on 4 stock PX4 iris vehicles in Gazebo classic. Space is scaled 1:8
+and time runs 3x faster. We control the vehicles over MAVLink with pymavlink, sending
 `SET_POSITION_TARGET_LOCAL_NED` (position + velocity) at 10 Hz in OFFBOARD mode.
 
 ```bash
 scripts/run_gazebo_demo.sh            # launches 4 PX4 SITL iris (UDP 14541-14544), replays, records
-# -> results/gazebo_demo.mp4 (55 s, Gazebo window only)
+# -> results/gazebo_demo.mp4 (36 s, Gazebo window only)
 ```
 
 * `gazebo_demo/launch_sitl.sh` does the same as PX4's `sitl_multiple_run.sh -m iris -n 4`, but
-  loads our world `zg_spine.world`, which has station poles and a fixed camera.
+  loads our world `zg_spine.world` (sky, grass, a marker pole and ground disc at each station,
+  fixed camera). gzclient uses `gazebo_demo/gzhome/` as its home, so its window opens at
+  1920x1080 without changing your own `~/.gazebo` settings.
 * `gazebo_demo/extract_traj.py` re-runs seed 1 and saves the tracks of the 4 UAVs to
   `traj_seed1.csv`. It runs with `PYTHONNOUSERSITE=1` because `zg` needs numpy < 2.
 * `gazebo_demo/px4_replay.py` arms, switches to OFFBOARD, climbs to separate layers, moves to
   the start, replays and lands.
 * You need `~/PX4-Autopilot` v1.14 built for gazebo-classic, and pymavlink.
-* Moving vehicles stay within about 3 m of the replayed track, relays on station within 0.1 m.
-  The camera sits low and looks up, so the black iris frames show up against the sky.
+* The vehicles stay within about 1 m of the replayed track. The camera is 7.5 m from station 3,
+  low and looking up, so the drones show up clearly against the sky. The clip shows the relay on
+  station 3, the relief arriving next to it, the old relay leaving and the relief taking over.
 
 ## Install
 

@@ -1,34 +1,63 @@
 <?xml version="1.0" ?>
-<!-- PX4 empty world + markers for relay stations 2 and 3 (scaled 1:4) and a fixed camera. -->
-<sdf version="1.5">
+<!-- Relay stations 2 and 3 of the seed-1 run, scaled 1:8, centred away from the world origin. -->
+<sdf version="1.6">
   <world name="default">
+    <scene>
+      <ambient>0.5 0.5 0.5 1</ambient>
+      <background>0.62 0.78 0.95 1</background>
+      <sky><clouds><speed>2</speed></clouds></sky>
+      <shadows>true</shadows>
+      <grid>false</grid>
+      <origin_visual>false</origin_visual>
+    </scene>
     <include><uri>model://sun</uri></include>
-    <include><uri>model://ground_plane</uri></include>
-    <include><uri>model://asphalt_plane</uri></include>
+
+    <model name="grass">
+      <static>true</static>
+      <link name="l">
+        <collision name="c"><geometry><plane><normal>0 0 1</normal><size>400 400</size></plane></geometry></collision>
+        <visual name="v">
+          <cast_shadows>false</cast_shadows>
+          <geometry><plane><normal>0 0 1</normal><size>400 400</size></plane></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Grass</name></script></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- station 2 (orange) at (10.36, 20), station 3 (blue) at (20, 20); relay altitude 6.4 m -->
     <model name="station_2">
       <static>true</static>
-      <pose>-9.64 7.5 6.375 0 0 0</pose>
-      <link name="pole"><visual name="v"><geometry><cylinder><radius>0.12</radius><length>12.75</length></cylinder></geometry>
-        <material><ambient>0.92 0.41 0.2 1</ambient><diffuse>0.92 0.41 0.2 1</diffuse></material></visual></link>
+      <pose>10.36 20 0 0 0 0</pose>
+      <link name="l">
+        <visual name="disc"><pose>0 0 0.01 0 0 0</pose><geometry><cylinder><radius>1.3</radius><length>0.02</length></cylinder></geometry>
+          <material><ambient>0.92 0.41 0.2 1</ambient><diffuse>0.92 0.41 0.2 1</diffuse></material></visual>
+        <visual name="pole"><pose>0 0 2.6 0 0 0</pose><geometry><cylinder><radius>0.05</radius><length>5.2</length></cylinder></geometry>
+          <material><ambient>0.3 0.3 0.3 1</ambient><diffuse>0.3 0.3 0.3 1</diffuse></material></visual>
+        <visual name="top"><pose>0 0 5.3 0 0 0</pose><geometry><sphere><radius>0.18</radius></sphere></geometry>
+          <material><ambient>0.92 0.41 0.2 1</ambient><diffuse>0.92 0.41 0.2 1</diffuse></material></visual>
+      </link>
     </model>
     <model name="station_3">
       <static>true</static>
-      <pose>9.64 7.5 6.375 0 0 0</pose>
-      <link name="pole"><visual name="v"><geometry><cylinder><radius>0.12</radius><length>12.75</length></cylinder></geometry>
-        <material><ambient>0.92 0.41 0.2 1</ambient><diffuse>0.92 0.41 0.2 1</diffuse></material></visual></link>
+      <pose>20 20 0 0 0 0</pose>
+      <link name="l">
+        <visual name="disc"><pose>0 0 0.01 0 0 0</pose><geometry><cylinder><radius>1.3</radius><length>0.02</length></cylinder></geometry>
+          <material><ambient>0.16 0.47 0.84 1</ambient><diffuse>0.16 0.47 0.84 1</diffuse></material></visual>
+        <visual name="pole"><pose>0 0 2.6 0 0 0</pose><geometry><cylinder><radius>0.05</radius><length>5.2</length></cylinder></geometry>
+          <material><ambient>0.3 0.3 0.3 1</ambient><diffuse>0.3 0.3 0.3 1</diffuse></material></visual>
+        <visual name="top"><pose>0 0 5.3 0 0 0</pose><geometry><sphere><radius>0.18</radius></sphere></geometry>
+          <material><ambient>0.16 0.47 0.84 1</ambient><diffuse>0.16 0.47 0.84 1</diffuse></material></visual>
+      </link>
     </model>
-    <model name="spine_line">
-      <static>true</static>
-      <pose>0 7.5 0.02 0 0 0</pose>
-      <link name="l"><visual name="v"><geometry><box><size>70 0.3 0.02</size></box></geometry>
-        <material><ambient>0.2 0.2 0.2 1</ambient><diffuse>0.2 0.2 0.2 1</diffuse></material></visual></link>
-    </model>
+
     <gui fullscreen="0">
       <camera name="user_camera">
-        <pose>0 -30 5 0 -0.26 1.5708</pose>
+        <!-- 7.5 m south of station 3, below relay height looking up, so drones show against the sky -->
+        <pose>22 12.5 4.0 0 -0.3 1.5708</pose>
         <view_controller>orbit</view_controller>
       </camera>
     </gui>
+
     <physics name="default_physics" default="0" type="ode">
       <gravity>0 0 -9.8066</gravity>
       <ode>

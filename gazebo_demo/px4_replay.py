@@ -1,7 +1,7 @@
 """Replay a ZERO-GAP baton pass on 4 PX4 SITL iris vehicles over MAVLink (pymavlink).
 
 Vehicle i (1..4) listens on UDP 14540+i and is spawned at Gazebo ENU (0, 3i).
-Scene: relay stations 2 and 3 of the seed-1 demo run, scaled 1:4, time 4x.
+Scene: relay stations 2 and 3 of the seed-1 demo run, scaled 1:8, time 3x.
 
     python3 gazebo_demo/px4_replay.py            # extracts trajectories first if needed
 """
@@ -20,9 +20,9 @@ ROOT = os.path.dirname(HERE)
 M = mavutil.mavlink
 
 UIDS = [10, 9, 31, 33]          # old relay st2, old relay st3, relief st3, relief st2
-SCALE = 4.0                     # 1:4 in space
-TSCALE = 4.0                    # sim seconds per wall second
-CX, CY, NORTH0 = 192.71, 500.0, 7.5     # midpoint of stations 2 and 3 -> Gazebo (0, 7.5)
+SCALE = 8.0                     # 1:8 in space
+TSCALE = 3.0                    # sim seconds per wall second
+CX, CY, EAST0, NORTH0 = 231.25, 500.0, 20.0, 20.0   # relay station 3 -> Gazebo (20, 20), away from the origin
 POS_VEL_YAW = 0b0000100111000000        # use x,y,z + vx,vy,vz (feed-forward) + yaw
 OFFBOARD = 6                             # PX4 custom main mode
 
@@ -36,7 +36,7 @@ def load_traj(path):
 
 
 def to_enu(x, y, z):
-    return (x - CX) / SCALE, (y - CY) / SCALE + NORTH0, z / SCALE
+    return (x - CX) / SCALE + EAST0, (y - CY) / SCALE + NORTH0, z / SCALE
 
 
 def vel_enu(rows, t, h=0.5):
@@ -124,7 +124,9 @@ def main():
     # move to replay start on separate layers, then settle to the replay altitude
     stage = {i: (start[i][0], start[i][1], layer[i] + 6.0) for i in start}
     stream(vs, stage, 9.0)
-    stream(vs, start, 4.0 + a.hold)
+    stream(vs, start, 4.0)
+    open("/tmp/zg_replay_start", "w").close()          # recorder starts here
+    stream(vs, start, a.hold)
 
     print(f"replay sim t={t0:.0f}..{t1:.0f} s at {TSCALE:.0f}x", flush=True)
     w0 = time.time()

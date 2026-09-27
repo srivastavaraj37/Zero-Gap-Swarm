@@ -18,3 +18,9 @@ results/runs/
 .DS_Store
 .vscode/
 .idea/
+
+# gzclient writes logs and caches into its own home; keep only the window settings
+gazebo_demo/gzhome/*
+!gazebo_demo/gzhome/.gazebo/
+gazebo_demo/gzhome/.gazebo/*
+!gazebo_demo/gzhome/.gazebo/gui.ini
