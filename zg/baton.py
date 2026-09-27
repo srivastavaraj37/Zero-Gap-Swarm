@@ -62,13 +62,16 @@ class Kinematics:
         return batt - self.time_home(pos, pad) - self.margin
 
 
-def intercept(bb, slot, t, t_ready, travel_fn, iters=5):
-    """Arrival time at a (possibly moving) slot: fixed-point on
-    t_arr = t_ready + travel(target(t_arr))."""
+def intercept(bb, slot, t, t_ready, travel_fn, iters=60):
+    """Arrival time at a (possibly moving) slot: fixed point of
+    t_arr = t_ready + travel(target(t_arr)), iterated to convergence."""
     t_arr = t_ready
     for _ in range(iters):
         tgt = bb.pos(slot, t_arr) + (slot.rv_offset if slot.occupant is not None else 0)
-        t_arr = t_ready + travel_fn(tgt)
+        nxt = t_ready + travel_fn(tgt)
+        if abs(nxt - t_arr) < 0.5:
+            return nxt, tgt
+        t_arr = nxt
     return t_arr, tgt
 
 

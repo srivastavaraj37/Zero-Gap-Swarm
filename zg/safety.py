@@ -38,7 +38,7 @@ def separation_velocity(pos, vdes, prio, active, dmin, guard, lookahead, vmax):
             dvec, n = np.array([1.0, 0.0, 0.0]), 1.0
         u = dvec / n
         d = min(d_now[a, b], d_pred[a, b])
-        mag = vmax * np.clip(2.0 * (guard - d) / (guard - dmin), 0.3, 2.0)
+        mag = vmax * np.clip(2.0 * (guard - d) / (guard - dmin), 0.0, 2.0)
         pa, pb = prio[ua], prio[ub]
         wa = 1.0 if pa < pb else 0.1
         wb = 1.0 if pb < pa else 0.1
@@ -73,7 +73,7 @@ def hard_filter(pos, vel, prio, active, d_safe, dt, vmax, passes=4):
             n = np.linalg.norm(dvec)
             u = dvec / n if n > 1e-6 else np.array([0.0, 0.0, 1.0])
             closing = -np.dot(v[ua] - v[ub], u)
-            allowed = max(0.0, n - d_safe) / dt
+            allowed = max((n - d_safe) / dt, -2.0)        # inside d_safe: must open up
             excess = closing - allowed
             if excess <= 0:
                 continue

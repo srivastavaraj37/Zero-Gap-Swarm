@@ -34,6 +34,7 @@ class Planner:
         self.deadline = self.duration - self.m["end_margin_s"]
         self.t_col_end = backbone.F.t_col_end
         self.next_shield = 0.0
+        self.min_service = bt["min_service_s"]
         self.shield_log = []
         self.events = []
 
@@ -74,15 +75,24 @@ class Planner:
         return True
 
     def pick(self, sim, sl, t, allow_air):
-        """Choose the UAV that can be on station earliest (promotion or launch)."""
+        """Choose the UAV that can be on station earliest.
+
+        Candidates: ready UAVs on the ground, plus (ZERO-GAP) airborne shadows and
+        UAVs flying home that still have enough battery for a useful stint."""
         best, best_t = None, np.inf
         if allow_air:
-            for sh in self.slots[self.bb.n_fixed:]:
-                u = sim.uavs[sh.occupant] if sh.occupant is not None else None
-                if u is None or not u.alive or u.state != "ON_STATION":
+            for u in sim.uavs:
+                if not u.alive:
+                    continue
+                shadow = (u.state == "ON_STATION" and u.slot is not None
+                          and self.slots[u.slot].kind == "shadow")
+                homing = u.state in ("VACATE", "TRANSIT_HOME") and u.slot is None
+                if not (shadow or homing):
                     continue
                 t_arr = self._eta_air(u, sl, t)
-                if self.kin.ttmr(u.batt, u.pos, u.pad) - (t_arr - t) < 180.0:
+                home_from_slot = self.kin.time_home(self.bb.pos(sl, t_arr, self.slots), u.pad)
+                service = u.batt - (t_arr - t) - home_from_slot - self.kin.margin
+                if service < self.min_service:
                     continue
                 if t_arr < best_t and self._worth(sl, t_arr, u.pad):
                     best, best_t = u, t_arr
@@ -100,6 +110,8 @@ class Planner:
             if old.occupant == u.uid:
                 old.occupant = None
             self.events.append((t, "promote", u.uid, sl.sid))
+        elif u.state in ("VACATE", "TRANSIT_HOME"):
+            self.events.append((t, "retask", u.uid, sl.sid))
         sl.incoming = u.uid
         u.slot = sl.sid
         if u.state == "GROUND":
@@ -117,9 +129,13 @@ class Planner:
             if sl.incoming == u.uid:
                 sl.incoming = None
         u.slot = None
+        was = u.state
+        if was == "TAKEOFF" and np.linalg.norm(u.pos[:2] - u.pad) < 5.0:
+            u.state = "LANDING"                           # never left the pad area
+            return
         u.state = "VACATE"
         u.vacate_xy = u.pos[:2].copy()
-        if sl is not None and u.pos[0] >= 0:
+        if sl is not None and was in ("ON_STATION", "HANDOVER_WAIT") and u.pos[0] >= 0:
             off = sl.vacate_offset
             if sl.kind == "surveyor":                     # step behind the moving column
                 vx = self.bb.vel(sl, t)[0]

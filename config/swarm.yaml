@@ -1,5 +1,5 @@
 # ZERO-GAP swarm / planner parameters.
-fleet_size: 26                # default N - chosen by analysis/fleet_sizing.py
+fleet_size: 38                # default N - from the simulated fleet sweep (analytic minimum 28)
 dt: 0.5                       # simulation tick (s)
 mode: zerogap                 # zerogap | baseline
 
@@ -26,29 +26,30 @@ backbone:                     # fixed relay stations along the spine y = 500
   lead_m: 20.0                # station j active while x_j <= column_x + lead
 
 pads:                         # landing/charging pads around the center
-  x: [-145.0, -119.0, -93.0, -67.0, -41.0, -15.0]
-  y: [422.0, 448.0, 474.0, 500.0, 526.0, 552.0, 578.0]
+  x: [-145.0, -121.0, -97.0, -73.0, -49.0, -25.0]     # >= 25 m from relay station 0
+  y: [428.0, 452.0, 476.0, 500.0, 524.0, 548.0, 572.0]
 gates:                        # corridor mouth; straight lines used when they stay legal
   x: 5.0
   y_range: [440.0, 560.0]
 launch_interval_s: 8.0
 transit_lane_y: 455.0         # outbound lane parallel to the spine
 
-rendezvous_offset_m: 28.0     # relief UAV waits this far from the slot (make-before-break)
+rendezvous_offset_m: 34.0     # relief waits here, outside the 30 m repulsion guard
 
 baton:
   enabled: true
   handover_buffer_s: 60.0     # relief arrives at least this long before must-return
   lookahead_s: 30.0           # pre-position relays this long before they are needed
   failure_detect_s: 2.0       # heartbeat timeout before a slot is declared vacant
-  promote_shadows: true       # airborne shadow may be promoted to fill a failed slot
+  promote_shadows: true       # airborne shadows / homing UAVs may be re-tasked to a slot
+  min_service_s: 240.0        # re-task only if the UAV can then serve at least this long
 
 ap_shield:
   enabled: true
   max_shadows: 3
   ground_reserve: 2           # never launch a shadow if fewer ready UAVs than this remain
   period_s: 2.0
-  clearance_m: 25.0
+  clearance_m: 32.0
 
 safety:
   guard_radius: 30.0          # repulsion when closing inside this 3-D distance

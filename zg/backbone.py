@@ -141,7 +141,7 @@ class Backbone:
         off = float(s["rendezvous_offset_m"])
         self.slots = []
         for j, x in enumerate(self.station_x):
-            self.slots.append(Slot(len(self.slots), "relay", j, self.relay_alt, (-off, 0, 0), (0.0, 40.0)))
+            self.slots.append(Slot(len(self.slots), "relay", j, self.relay_alt, (off, 0, 0), (0.0, 40.0)))
         for i in range(formation.k):
             self.slots.append(Slot(len(self.slots), "surveyor", i, formation.alt, (0, off, 0), (0.0, -30.0)))
         self.n_fixed = len(self.slots)

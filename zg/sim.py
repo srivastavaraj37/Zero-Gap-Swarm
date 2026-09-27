@@ -217,8 +217,21 @@ class Sim:
             return self._track(u, np.array([rv_f[0], rv_f[1], A["outbound"]]), kp=1.0)
         if st == "APPROACH":
             rv = pl.rendezvous(u, t)
+            far = np.linalg.norm(rv[:2] - u.pos[:2]) > 15.0
+            if far and np.linalg.norm(rv[:2] - u.pos[:2]) > 60.0:
+                # long re-task leg: use the outbound layer like any departing UAV
+                tgt = np.array([rv[0], rv[1], A["outbound"]])
+                g = self.kin.gate_for(u.pos, rv)
+                if g is not None:
+                    tgt[:2] = g
+                v = self._track(u, tgt, kp=1.0)
+                if abs(u.pos[2] - A["outbound"]) > 1.0 and not self._vertical_clear(u, A["outbound"]):
+                    v[:] = 0.0
+                elif abs(u.pos[2] - A["outbound"]) > 1.0:
+                    v[:2] = 0.0                               # change layer first
+                return v
             v = self._track(u, rv, pl.slot_vel(u, t))
-            if np.linalg.norm(rv[:2] - u.pos[:2]) > 15.0 or not self._vertical_clear(u, rv[2]):
+            if far or not self._vertical_clear(u, rv[2]):
                 v[2] = 0.0                                    # hold altitude while far / blocked
             if np.linalg.norm(rv[:2] - u.pos[:2]) < 4.0 and abs(rv[2] - u.pos[2]) < 1.0:
                 pl.arrived(u, t, self)
@@ -367,6 +380,8 @@ class Sim:
                 vdes[u.uid] = self._desired(u, t)
                 act[u.uid] = self.airborne(u) and u.pos[2] > 1.0
                 prio[u.uid] = PRIO.get(u.state, 1) + 0.001 * u.uid   # uid breaks ties
+                if u.slot is not None and self.planner.slots[u.slot].kind == "shadow":
+                    prio[u.uid] = 1.5 + 0.001 * u.uid                # shadows make way
                 if self._critical(u):
                     prio[u.uid] = 5.0
             elif u.state == "SWAP" and t >= u.t_swap_end:
@@ -374,6 +389,7 @@ class Sim:
                 u.state = "GROUND"
                 u.t_ready = t
         pos = np.array([u.pos for u in U])
+        vdes = clamp_speed(vdes, self.m["uav"]["max_speed"], self.m["uav"]["max_vertical_speed"])
         sc = self.s["safety"]
         v = separation_velocity(pos, vdes, prio, act, self.m["safety"]["min_separation"],
                                 sc["guard_radius"], sc["lookahead_s"], self.m["uav"]["max_speed"])
