@@ -5,3 +5,4 @@ ros2_ws/install/
 ros2_ws/log/
 results/runs/
 .pytest_cache/
+zero_gap_6hr_prompt.md
