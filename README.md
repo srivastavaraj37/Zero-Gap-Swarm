@@ -4,7 +4,7 @@ Team: Dhvaja
 Team ID: TM-D76C0CEA600
 Authors: Saianshi Mohapatra (lead), Esha Agrawal, Raj Srivastava
 
-Demo video: [<VIDEO_LINK>](https://youtu.be/C9hjvqqHyYo)
+Demo video: [<VIDEO_LINK>](https://youtu.be/C9hjvqqHyYo)](https://youtu.be/-GQiydx2d64)
 
 This is our Stage 1 simulation entry for IIT Bombay Techfest PUSHPAK Grand Challenge 1,
 "UAV-X: Resilient BVLOS Swarm Challenge". A swarm of UAVs searches a 1 km x 1 km area for
