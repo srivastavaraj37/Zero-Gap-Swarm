@@ -23,7 +23,7 @@ UIDS = [10, 9, 31, 33]          # old relay st2, old relay st3, relief st3, reli
 SCALE = 4.0                     # 1:4 in space
 TSCALE = 4.0                    # sim seconds per wall second
 CX, CY, NORTH0 = 192.71, 500.0, 7.5     # midpoint of stations 2 and 3 -> Gazebo (0, 7.5)
-POS_ONLY_YAW = 0b0000100111111000       # use x,y,z + yaw
+POS_VEL_YAW = 0b0000100111000000        # use x,y,z + vx,vy,vz (feed-forward) + yaw
 OFFBOARD = 6                             # PX4 custom main mode
 
 
@@ -37,6 +37,13 @@ def load_traj(path):
 
 def to_enu(x, y, z):
     return (x - CX) / SCALE, (y - CY) / SCALE + NORTH0, z / SCALE
+
+
+def vel_enu(rows, t, h=0.5):
+    """Trajectory velocity in the scaled scene, in wall-clock m/s."""
+    a = to_enu(*interp(rows, t - h))
+    b = to_enu(*interp(rows, t + h))
+    return tuple((q - p) / (2 * h) * TSCALE for p, q in zip(a, b))
 
 
 def interp(rows, t):
@@ -58,11 +65,11 @@ class Vehicle:
         self.home_n = 3.0 * i                     # spawn offset (Gazebo y = north)
         self.pos = (0.0, self.home_n, 0.0)
 
-    def setpoint(self, e, n, u):
-        """ENU world point -> this vehicle's local NED setpoint."""
+    def setpoint(self, e, n, u, ve=0.0, vn=0.0, vu=0.0):
+        """ENU world point (+ ENU velocity feed-forward) -> this vehicle's local NED setpoint."""
         self.m.mav.set_position_target_local_ned_send(
-            0, self.sys, 1, M.MAV_FRAME_LOCAL_NED, POS_ONLY_YAW,
-            n - self.home_n, e, -u, 0, 0, 0, 0, 0, 0, 0.0, 0)
+            0, self.sys, 1, M.MAV_FRAME_LOCAL_NED, POS_VEL_YAW,
+            n - self.home_n, e, -u, vn, ve, -vu, 0, 0, 0, 0.0, 0)
 
     def cmd(self, command, *p):
         p = list(p) + [0] * (7 - len(p))
@@ -129,7 +136,7 @@ def main():
         errs = []
         for i, u in enumerate(UIDS):
             tgt = to_enu(*interp(tr[u], ts))
-            vs[i].setpoint(*tgt)
+            vs[i].setpoint(*tgt, *vel_enu(tr[u], ts))
             vs[i].drain()
             errs.append(sum((a - b) ** 2 for a, b in zip(tgt, vs[i].pos)) ** 0.5)
         if ts >= next_log:
